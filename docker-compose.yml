@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql
+    container_name: practicedb
+    ports:
+      - "3333:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: daily_diary
+      MYSQL_ROOT_PASSWORD: yaman
+
+  admin:
+    image: phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: practicedb
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: yaman
