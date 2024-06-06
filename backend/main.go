@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"net/http"
 
@@ -34,7 +35,7 @@ func main() {
 
 	db.AutoMigrate(&Users{})
 
-	var users = [5000]Users{
+	var users = []Users{
 		{Firstname: "yaman", Lastname: "verma", Username: "yaman123", Email: "yamanverma123@gmail.com", Password: "yaman123", Confirmpassword: "yaman123", Mobilenumber: "7691092717"},
 		{Firstname: "kunal", Lastname: "verma", Username: "kunal123", Email: "kunalverma123@gmail.com", Password: "yaman123", Confirmpassword: "yaman123", Mobilenumber: "9509615887"},
 	}
@@ -58,4 +59,37 @@ func selectedUsers(users *gin.Context) {
 	var selectedUsers []Users
 	db.Select("firstname", "lastname", "username", "email", "mobilenumber").Find(&selectedUsers)
 	users.JSON(http.StatusOK, selectedUsers)
+}
+
+func (u *Users) BeforeCreate(tx *gorm.DB) (err error) {
+	if u.Firstname == "" {
+		return errors.New("firstname is required")
+	}
+
+	if u.Lastname == "" {
+		return errors.New("lastname is required")
+	}
+	if u.Username == "" {
+		return errors.New("username is required")
+	}
+	if u.Password == "" {
+		return errors.New("password is required")
+	}
+
+	if u.Confirmpassword == "" {
+		return errors.New("confirm password is required")
+	}
+	if u.Email == "" {
+		return errors.New("email is required")
+	}
+
+	if u.Mobilenumber == "" {
+		return errors.New("mobile number is required")
+	}
+
+	if u.Password != u.Confirmpassword {
+		return errors.New("password and confirm password do not match")
+	}
+
+	return nil
 }
